@@ -1,3 +1,5 @@
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -124,10 +126,68 @@ public class DataEntryFrame extends JFrame
 		this.add(formSelect);
 
 		// TODO: add in all form-fillable components:
-		JPanel formFill = new JPanel(/* TODO: add layout manager */);
-		// TODO: add to panel...
-		this.add(formFill);
+		JPanel formFill = new JPanel(new GridBagLayout());
+		GridBagConstraints grid = new GridBagConstraints();
 
+		this.add(formFill);
+		
+
+	    grid.anchor = GridBagConstraints.WEST;
+	    grid.fill = GridBagConstraints.BOTH;
+		grid.gridx = 0;
+		grid.gridy = 0;
+		grid.weightx = 1.0;
+		grid.weighty = 1.0;
+		
+		formFill.add(firstNameInfo, grid);
+		
+		grid.gridy = 1;
+		formFill.add(midddleInitialInfo, grid);
+		
+		grid.gridy = 2;
+		formFill.add(lastNameInfo, grid);
+		
+		grid.gridy = 3;
+		formFill.add(displayNameInfo, grid);
+		
+		grid.gridy = 4;
+		formFill.add(SSNInfo, grid);
+		
+		grid.gridy = 5;
+		formFill.add(phoneInfo, grid);
+		
+		grid.gridy = 6;
+		formFill.add(emailInfo, grid);
+		
+		grid.gridy = 7;
+		formFill.add(addressInfo, grid);
+		
+		grid.fill = GridBagConstraints.HORIZONTAL;
+		grid.gridx = 1;
+		grid.gridy = 0;
+		formFill.add(firstName, grid);
+		
+		grid.gridy = 1;
+		formFill.add(middleInitial, grid);
+		
+		grid.gridy = 2;
+		formFill.add(lastName, grid);
+		
+		grid.gridy = 3;
+		formFill.add(displayName, grid);
+		
+		grid.gridy = 4;
+		formFill.add(SSN, grid);
+		
+		grid.gridy = 5;
+		formFill.add(phone, grid);
+		
+		grid.gridy = 6;
+		formFill.add(email, grid);
+		
+		grid.gridy = 7;
+		formFill.add(address, grid);
+		
 		// Add in the signature panel:
 		spanel.addMouseMotionListener(new MouseMotionListener()
 		{
@@ -180,7 +240,9 @@ public class DataEntryFrame extends JFrame
 			this.setVisuals(datalist.get(select));
 		});
 
-		// TODO: add buttons to panel and add to frame
+		formHandling.add(createForm);
+		formHandling.add(saveForm);
+		formHandling.add(resetForm);
 
 		// Add in the error message field:
 		this.errorField.setEditable(false);
@@ -211,6 +273,7 @@ public class DataEntryFrame extends JFrame
 		JButton exportButton = new JButton("Export");
 		exportButton.addActionListener((e) -> {
 
+			
 			// TODO: Choose a file (hint, use JFileChooser):
 			// TODO: export datalist from a file (hint, use file.getAbsolutePath()):
 			// TODO: display error message on fail, else display success message
