@@ -4,16 +4,24 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Class to create a GUI for an example program to accept form submissions. The program keeps a list of several
@@ -104,7 +112,8 @@ public class DataEntryFrame extends JFrame
 		SSN.setText(data.getSSN());
 		phone.setText(data.getPhone());
 		email.setText(data.getEmail());
-		address.setText(data.getAddress());		
+		address.setText(data.getAddress());	
+		spanel.setSignature(data.getSignature());
 	}
 
 	/**
@@ -202,7 +211,7 @@ public class DataEntryFrame extends JFrame
 			@Override
 			public void mouseDragged(MouseEvent e)
 			{
-				// TODO: add a point to the panel on drag and repaint.
+				spanel.addPoint(e.getPoint());
 				
 				repaint();
 			}
@@ -229,21 +238,39 @@ public class DataEntryFrame extends JFrame
 		saveForm.addActionListener((e) -> {
 			int select = formSelect.getSelectedIndex();
 
-			// TODO: use the JTextFields and the signature panel to set the values
-			// of the selected FormData object.
+			boolean valueSet = datalist.get(select).setValues(
+						firstName.getText(),
+						middleInitial.getText().charAt(0), 
+						lastName.getText(),
+						displayName.getText(),
+						SSN.getText(),
+						phone.getText(),
+						email.getText(),
+						address.getText(),
+						spanel.getSignature());
 
 			this.setVisuals(datalist.get(select));
+			
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
 
-			// TODO: display an error message if setting the values failed. Else, display a success message.w
+			if (valueSet)
+			{
+				errorField.setText("Failed to set form Information!");
+			}
+			else
+			{
+				errorField.setText("Form information sucessfully updated!");
+			}
 		});
 
 		JButton resetForm = new JButton("Reset");
 		resetForm.addActionListener((e) -> {
 			int select = formSelect.getSelectedIndex();
-			// TODO: reset the values on the selected form data
+			
+			datalist.get(select).reset();
+			
 			this.setVisuals(datalist.get(select));
 		});
 
@@ -255,42 +282,101 @@ public class DataEntryFrame extends JFrame
 
 		// Add in the error message field:
 		this.errorField.setEditable(false);
-		// TODO: add error field to frame
 		this.add(errorField);
 		
 		// Add in the import/export panel:
 		JPanel importExport = new JPanel(new GridLayout(1, 2));
 		JButton importButton = new JButton("Import");
-
-		// TODO: Import from a file: you will import a list of FormData objects and should use this to replace
-		// the data in datalist.
+		
 		importButton.addActionListener((e) -> {
-
-			// TODO: Choose a file (hint, use JFileChooser):
-			// TODO: extract object from a file (hint, use file.getAbsolutePath()):
-			//		 You will use the file to replace the datalist object. I.e. you will be loading in a new
-			//		 list of formdata.
-			// TODO: display error message on fail, else display success message
-
+			JFileChooser chooser = new JFileChooser();
+			    
+			    int returnVal = chooser.showOpenDialog(getParent());
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       System.out.println("You chose to open this file: " +
+			            chooser.getSelectedFile().getName());
+			    }
+			
+			    ArrayList<FormData> importList = new ArrayList<FormData>();
+			    
+			boolean fail = false;
+			
+			try {
+				FileInputStream fileIn = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());
+            	ObjectInputStream in = new ObjectInputStream(fileIn);
+            	
+            	Object current = new Object();
+            	while ((current = in.readObject()) != null)
+            	{
+            		importList.add((FormData) current);
+            	}
+            	
+            	datalist = importList;
+            	
+            	in.close();
+            	fileIn.close();
+			}
+			catch (IOException | ClassNotFoundException d)
+			{
+				fail = true;
+			}
+			
+			if (fail)
+			{
+				errorField.setText("Could not read from file!");
+			}
+			else
+			{
+				errorField.setText("Data Sucessfully imported from file!");
+			}
+					
         	// Use this code snippet to reset visuals after importing:
-			/*
             int select = 0;
 			DefaultComboBoxModel<String> newComboBoxModel = getComboBoxModel(datalist);
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
 			this.setVisuals(datalist.get(select));
-			*/
+			
 		});
 		JButton exportButton = new JButton("Export");
 		exportButton.addActionListener((e) -> {
 
+			JFileChooser chooser = new JFileChooser();			    
+			    int returnVal = chooser.showOpenDialog(getParent());
+			    if(returnVal == JFileChooser.APPROVE_OPTION) {
+			       System.out.println("You chose to open this file: " +
+			            chooser.getSelectedFile().getName());
+			    }
 			
-			// TODO: Choose a file (hint, use JFileChooser):
-			// TODO: export datalist from a file (hint, use file.getAbsolutePath()):
-			// TODO: display error message on fail, else display success message
+			boolean fail = false;
+			
+			try {
+				FileOutputStream fileOut = new FileOutputStream(chooser.getSelectedFile().getAbsolutePath());
+            	ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            	
+            	for(int i = 0; i < datalist.size(); ++i)
+            	{
+            		out.writeObject(datalist.get(i));
+            	}
+            	
+            	out.close();
+            	fileOut.close();
+			}
+			catch (IOException d)
+			{
+				fail = true;
+			}
+			
+			if (fail)
+			{
+				errorField.setText("Could not write to file!");
+			}
+			else
+			{
+				errorField.setText("Data Sucessfully saved to file!");
+			}
 		});
 
-		// TODO: add import/export to panel and add to frame
 		importExport.add(importButton);
 		importExport.add(exportButton);
 		this.add(importExport);
