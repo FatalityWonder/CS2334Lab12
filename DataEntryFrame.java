@@ -97,7 +97,14 @@ public class DataEntryFrame extends JFrame
 	 */
 	private void setVisuals(FormData data)
 	{
-		// TODO: set the text fields and the signature as corresponding to the fields in FormData.
+		firstName.setText(data.getFirstName());
+		middleInitial.setText(Character.toString(data.getMiddleInitial()));
+		lastName.setText(data.getLastName());
+		displayName.setText(data.getDisplayName());
+		SSN.setText(data.getSSN());
+		phone.setText(data.getPhone());
+		email.setText(data.getEmail());
+		address.setText(data.getAddress());		
 	}
 
 	/**
@@ -125,7 +132,6 @@ public class DataEntryFrame extends JFrame
 		});
 		this.add(formSelect);
 
-		// TODO: add in all form-fillable components:
 		JPanel formFill = new JPanel(new GridBagLayout());
 		GridBagConstraints grid = new GridBagConstraints();
 
@@ -162,7 +168,6 @@ public class DataEntryFrame extends JFrame
 		grid.gridy = 7;
 		formFill.add(addressInfo, grid);
 		
-		grid.fill = GridBagConstraints.HORIZONTAL;
 		grid.gridx = 1;
 		grid.gridy = 0;
 		formFill.add(firstName, grid);
@@ -198,6 +203,8 @@ public class DataEntryFrame extends JFrame
 			public void mouseDragged(MouseEvent e)
 			{
 				// TODO: add a point to the panel on drag and repaint.
+				
+				repaint();
 			}
 		});
 		this.add(signatureInfo);
@@ -243,12 +250,16 @@ public class DataEntryFrame extends JFrame
 		formHandling.add(createForm);
 		formHandling.add(saveForm);
 		formHandling.add(resetForm);
+		
+		this.add(formHandling);
 
 		// Add in the error message field:
 		this.errorField.setEditable(false);
 		// TODO: add error field to frame
-
+		this.add(errorField);
+		
 		// Add in the import/export panel:
+		JPanel importExport = new JPanel(new GridLayout(1, 2));
 		JButton importButton = new JButton("Import");
 
 		// TODO: Import from a file: you will import a list of FormData objects and should use this to replace
@@ -280,6 +291,9 @@ public class DataEntryFrame extends JFrame
 		});
 
 		// TODO: add import/export to panel and add to frame
+		importExport.add(importButton);
+		importExport.add(exportButton);
+		this.add(importExport);
 
 		// JFrame basics:
 		this.setTitle("Example Form Fillout");
