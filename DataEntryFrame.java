@@ -255,7 +255,7 @@ public class DataEntryFrame extends JFrame
 			formSelect.setModel(newComboBoxModel);
 			formSelect.setSelectedIndex(select);
 
-			if (valueSet)
+			if (!valueSet)
 			{
 				errorField.setText("Failed to set form Information!");
 			}
@@ -305,13 +305,9 @@ public class DataEntryFrame extends JFrame
 				FileInputStream fileIn = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());
             	ObjectInputStream in = new ObjectInputStream(fileIn);
             	
-            	Object current = new Object();
-            	while ((current = in.readObject()) != null)
-            	{
-            		importList.add((FormData) current);
-            	}
+            	ArrayList<FormData> fileData = (ArrayList<FormData>) in.readObject();
             	
-            	datalist = importList;
+            	datalist = fileData;
             	
             	in.close();
             	fileIn.close();
@@ -353,12 +349,9 @@ public class DataEntryFrame extends JFrame
 			try {
 				FileOutputStream fileOut = new FileOutputStream(chooser.getSelectedFile().getAbsolutePath());
             	ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            	
-            	for(int i = 0; i < datalist.size(); ++i)
-            	{
-            		out.writeObject(datalist.get(i));
-            	}
-            	
+
+            	out.writeObject(datalist);
+      
             	out.close();
             	fileOut.close();
 			}
